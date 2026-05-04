@@ -1,0 +1,38 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+description: rApp all
+
+imports:
+  - asd_types.yaml
+
+topology_template:
+  node_templates:
+    applicationServiceDescriptor:
+      type: tosca.nodes.asd
+      description: "rapp-all"
+      properties:
+        descriptor_id: 123e4567-e89b-12d3-a456-426614174000
+        descriptor_invariant_id: 040eff2a-eb1a-4aff-bd46-37ce38092985
+        descriptor_version: 1.0
+        schema_version: 2.0
+        function_description: rApp description
+        provider: Ericsson Software Technology (O-RAN SC NONRTRIC team)
+        application_name: rapp-all
+        application_version: 1.0
+      artifacts:
+        helloworld:
+          type: tosca.artifacts.asd.deploymentItem
+          file: "Artifacts/Deployment/HELM/hello-world-chart-0.1.0.tgz"
+          properties:
+            artifact_type: "helm_chart"
+            target_server: "chartmuseum"
+            target_server_uri: "UPDATE_THIS_CHART_MUSEUM_POST_CHARTS_URI"
+            item_id: 1
+        helloworld-sme-invoker:
+          type: tosca.artifacts.asd.deploymentItem
+          file: "Artifacts/Deployment/HELM/hello-world-sme-invoker-0.1.0.tgz"
+          properties:
+            artifact_type: "helm_chart"
+            target_server: "chartmuseum"
+            target_server_uri: "UPDATE_THIS_CHART_MUSEUM_POST_CHARTS_URI"
+            item_id: 2

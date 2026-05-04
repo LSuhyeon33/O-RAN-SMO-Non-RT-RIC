@@ -1,0 +1,35 @@
+metadata:
+  application_name: rapp-all
+  application_provider: EST
+  release_date_time: 2024-01-12T11:30:00+00:00
+  entry_definition_type: asd
+
+Source: asd.mf
+Source: Artifacts/Deployment/HELM/orufhrecovery-1.0.0.tgz
+Source: Artifacts/Deployment/HELM/ransliceassurance-1.0.0.tgz
+Source: Definitions/asd.yaml
+Source: Definitions/asd_types.yaml
+Source: Files/Guides/user_guide.txt
+Source: TOSCA-Metadata/TOSCA.meta
+Source: Files/Acm/definition/compositions.json
+Source: Files/Acm/instances/a1pms-instance.json
+Source: Files/Acm/instances/k8s-instance.json
+Source: Files/Acm/instances/kserve-instance.json
+Source: Files/Dme/infoconsumers/json-file-consumer.json
+Source: Files/Dme/infoconsumers/xml-file-consumer.json
+Source: Files/Dme/infoproducers/json-file-data-producer.json
+Source: Files/Dme/infoproducers/xml-file-data-producer.json
+Source: Files/Dme/infotypes/json-file-data-from-filestore.json
+Source: Files/Dme/infotypes/xml-file-data-from-filestore.json
+Source: Files/Sme/invokers/invoker-app1.json
+Source: Files/Sme/invokers/invoker-app2.json
+Source: Files/Sme/provider/aef-provider-function.json
+Source: Files/Sme/provider/amf-provider-function.json
+Source: Files/Sme/provider/apf-provider-function.json
+Source: Files/Sme/provider/gateway-provider-function.json
+Source: Files/Sme/serviceapis/api-set-1.json
+Source: Files/Sme/serviceapis/api-set-2.json
+
+non_mano_artifact_sets:
+    onap_others:
+        Source: Files/Guides/user_guide.txt

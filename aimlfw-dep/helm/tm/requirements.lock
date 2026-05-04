@@ -1,0 +1,6 @@
+dependencies:
+- name: aimlfw-common
+  repository: http://127.0.0.1:8879/charts
+  version: 1.0.0
+digest: sha256:283db1826d62bf2b54a7c7dfc894c451ac5a305de2288bb922527491e1a19c73
+generated: "2026-02-09T07:04:50.647347051+09:00"

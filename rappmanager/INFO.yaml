@@ -1,0 +1,49 @@
+---
+project: 'nonrtric_plt_rappmanager'
+project_creation_date: '2023-07-05'
+project_category: ''
+lifecycle_state: 'Incubation'
+project_lead: &oran_nonrtric_ptl
+    name: 'John Keeney'
+    email: 'John.Keeney@est.tech'
+    id: 'johnkeeney'
+    company: 'Ericsson Software Technology'
+    timezone: 'Europe/Dublin'
+primary_contact: *oran_nonrtric_ptl
+repositories:
+    - 'nonrtric/plt/rappmanager'
+# yamllint disable rule:line-length
+issue_tracking:
+    type: 'jira'
+    url: 'https://lf-o-ran-sc.atlassian.net/jira/software/c/projects/NONRTRIC/issues'
+    key: 'NONRTRIC'
+mailing_list:
+    type: 'groups.io'
+    url: 'https://lists.o-ran-sc.org/g/discuss'
+realtime_discussion:
+    type: 'irc'
+    server: 'freenode.net'
+    channel: '#o-ran-sc'
+meetings:
+    - type: 'zoom'
+      agenda: ''
+      url: 'https://lf-o-ran-sc.atlassian.net/wiki/spaces/RICNR/pages/15073287/Meetings'
+      server: 'n/a'
+      channel: 'n/a'
+      repeats: 'weekly'
+      time: 'Tuesdays, 15:00/16:00 UTC'
+committers:
+    - <<: *oran_nonrtric_ptl
+    - name: 'Aravindhan Ayyanathan'
+      email: 'aravindhan.a@est.tech'
+      company: 'Ericsson Software Technology'
+      id: 'aravind.est'
+      timezone: 'Europe/Dublin'
+    - name: 'Saul Gill'
+      email: ' saul.gill@est.tech'
+      company: 'Ericsson Software Technology'
+      id: 'saul.gill'
+      timezone: 'Europe/Dublin'
+tsc:
+    approval: 'https://wiki.o-ran-sc.org/display/TOC#ORANSCTechnicalOversightCommittee(TOC)-20230601 #3.a'
+# yamllint enable rule:line-length

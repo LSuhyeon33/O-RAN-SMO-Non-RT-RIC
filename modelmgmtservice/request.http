@@ -1,0 +1,79 @@
+### Note: update the vm ip in the host
+@host = x.x.x.x:32006
+
+### registraton
+POST http://{{host}}/ai-ml-model-registration/v1/model-registrations
+Content-Type: application/json
+
+{ 
+    "modelId": { 
+        "modelName": "TestModel1", 
+        "modelVersion": "v1.0" 
+    }, 
+    "description": "This is a test model.", 
+    "modelInformation": { 
+        "metadata": {
+            "author": "John Doe"
+        },
+        "inputDataType": "pdcp",
+        "outputDataType": "pdcp" 
+    } 
+}
+
+### Get All Models info
+GET http://{{host}}/models
+Content-Type: application/json
+
+### Get all Models info by name
+GET http://{{host}}/models?model-name=TestModel1
+Content-Type: application/json
+
+### Get all Models info by name and version
+GET http://{{host}}/models?model-name=TestModel1&model-version=v1.0
+Content-Type: application/json
+
+### Get Model info by ID
+GET http://{{host}}/model-registrations/a43d1a80-e1c5-4d87-b90f-729736bdd89f
+Content-Type: application/json
+
+### Updated Model info by ID
+PUT http://{{host}}/model-registrations/a43d1a80-e1c5-4d87-b90f-729736bdd89f
+Content-Type: application/json
+
+{
+    "id": "a43d1a80-e1c5-4d87-b90f-729736bdd89f",
+    "modelId": {
+      "modelName": "TestModel1",
+      "modelVersion": "v1.0",
+      "artifactVersion": "1.0.0"
+    },
+    "description": "This is a updated model.",
+    "modelInformation": {
+      "metadata": {
+        "author": "John Doe",
+        "owner": ""
+      },
+      "inputDataType": "pdcp",
+      "outputDataType": "pdcp"
+    },
+    "modelLocation": ""
+  }
+
+### delete model info by ID
+DELETE http://{{host}}/model-registrations/a43d1a80-e1c5-4d87-b90f-729736bdd89f
+
+
+### Upload model using multipart/form-data
+### Before Uploading, Make sure you have a "Model.zip" file in the current directory
+POST http://{{host}}/ai-ml-model-registration/v1/uploadModel/TestModel1/v1.0
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="Model.zip"
+Content-Type: application/zip
+
+< ./Model.zip
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Download model
+GET http://{{host}}/ai-ml-model-registration/v1/downloadModel/TestModel1/v1.0/1.0.0/model.zip

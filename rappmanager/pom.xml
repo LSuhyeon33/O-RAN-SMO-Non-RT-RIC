@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+* ========================LICENSE_START=================================
+* O-RAN-SC
+* %%
+* Copyright (C) 2023 Nordix Foundation
+* Copyright (C) 2023-2025 OpenInfra Foundation Europe. All rights reserved
+* %%
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* ========================LICENSE_END===================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.6</version>
+    </parent>
+    <groupId>org.o-ran-sc.nonrtric.plt</groupId>
+    <artifactId>rappmanager</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>NONRTRIC rAppmanager</name>
+    <description>O-RAN SC rApp Management function.</description>
+    <modules>
+        <module>rapp-manager-models</module>
+        <module>rapp-manager-dme</module>
+        <module>rapp-manager-acm</module>
+        <module>rapp-manager-sme</module>
+        <module>rapp-manager-application</module>
+    </modules>
+    <repositories>
+        <repository>
+            <id>onap-releases</id>
+            <name>onap-releases</name>
+            <url>https://nexus.onap.org/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+    <properties>
+        <java.version>17</java.version>
+        <openapi.maven.version>7.15.0</openapi.maven.version>
+        <docker-maven-plugin>0.46.0</docker-maven-plugin>
+        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <onap.acm.models.version>8.0.0</onap.acm.models.version>
+        <openapi.jackson.databind.nullable.version>0.2.6</openapi.jackson.databind.nullable.version>
+        <spring.statemachine.version>4.0.1</spring.statemachine.version>
+        <spring.context.version>6.2.8</spring.context.version>
+        <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
+        <io.swagger.version>2.2.36</io.swagger.version>
+        <slf4j.version>2.1.0-alpha1</slf4j.version>
+        <apache.httpcore.version>5.3.6</apache.httpcore.version>
+        <exec-maven-plugin.version>3.6.0</exec-maven-plugin.version>
+        <copy-resources-maven-plugin.version>3.3.1</copy-resources-maven-plugin.version>
+        <apache.compress.version>1.28.0</apache.compress.version>
+        <guava.version>33.5.0-jre</guava.version>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>false</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-test-csar-packages</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>
+                                scripts/init/generate-test-rapp-packages
+                            </workingDirectory>
+                            <executable>
+                                go
+                            </executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>generatetestrapppackages.go</argument>
+                            </arguments>
+                        </configuration>
+                        <inherited>false</inherited>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://jira.o-ran-sc.org/</url>
+    </issueManagement>
+</project>

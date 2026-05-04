@@ -1,0 +1,54 @@
+# ==================================================================================
+#
+#       Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#          http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+# ==================================================================================
+
+# GPU (CUDA runtime) base image
+# - CUDA 버전은 환경에 따라 조정 가능
+FROM nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Python + git + CA certs
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      python3.10 python3-pip python3-venv \
+      ca-certificates git \
+    && rm -rf /var/lib/apt/lists/*
+
+# python/pip alias
+RUN ln -sf /usr/bin/python3.10 /usr/local/bin/python && \
+    ln -sf /usr/bin/pip3 /usr/local/bin/pip
+
+# requirements
+WORKDIR /tmp
+COPY requirements_pipeline.txt .
+RUN pip install --upgrade pip && \
+    pip install -r requirements_pipeline.txt
+
+# KMU certification file install
+COPY KMU.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
+# AIML FW SDKs
+RUN pip install featurestoresdk==0.3.1 modelmetricsdk==0.4.0
+
+# runtime dir
+RUN mkdir -p /app_run
+WORKDIR /app_run

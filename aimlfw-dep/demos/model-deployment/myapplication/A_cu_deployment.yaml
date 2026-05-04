@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: autoencoder-cu-sweep
+  namespace: ricxapp
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: myapplication
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: myapplication-container
+        image: myapplication:dev
+        imagePullPolicy: IfNotPresent
+        command: ["python3","-u","/app/main.py"]
+        env:
+        - name: KSERVE_HOST
+          value: "http://autoencoder-cu.kserve-test.svc.cluster.local"
+        - name: MODEL_NAME
+          value: "autoencoder-cu"
+        - name: CSV_PATH
+          value: "/app/balanced_CU.csv"
+        - name: OUT_CSV
+          value: "/results/results_cu_autoencoder_10.csv"
+        - name: N_MIN
+          value: "100"
+        - name: N_MAX
+          value: "100000"
+        - name: N_STEP
+          value: "100"
+        - name: WARMUP_RUNS
+          value: "5"
+        - name: N_RUNS
+          value: "100"
+        - name: TIMEOUT_SEC
+          value: "60"
+        - name: THRESHOLD
+          value: "0.045"
+        - name: SEED
+          value: "7"
+        volumeMounts:
+        - name: results
+          mountPath: /results
+      volumes:
+      - name: results
+        hostPath:
+          path: /usr/local/o-ran/results/myapplication
+          type: DirectoryOrCreate

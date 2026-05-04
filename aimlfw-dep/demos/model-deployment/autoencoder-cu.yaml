@@ -1,0 +1,11 @@
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: "autoencoder-cu"
+  namespace: "kserve-test"
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: tensorflow
+      storageUri: "http://210.123.36.94:32002/model/autoencoder-cu/1/0.0.0/Model.zip"

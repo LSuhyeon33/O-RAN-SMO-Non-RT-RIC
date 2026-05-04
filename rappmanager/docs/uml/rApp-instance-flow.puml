@@ -1,0 +1,96 @@
+@startuml
+autonumber
+
+actor "API User"
+participant "rApp Manager"
+collections "File System"
+participant "ACM Runtime"
+participant "A1PMS Participant"
+participant "Kserve Participant"
+participant "K8s Participant"
+participant "DME Participant"
+participant "SME"
+
+autonumber
+group Create rApp Instance
+"API User"->"rApp Manager": Create rApp Instance
+"rApp Manager"->"API User": Create rApp Instance response
+end
+
+autonumber
+group Deploy rApp Instance
+"API User"->"rApp Manager": Deploy rApp Instance
+"rApp Manager"->"File System": Fetch rApp Package and Instance details
+    group ACM Deploy
+        "rApp Manager"->"ACM Runtime": Instantiate ACM Instance
+        "rApp Manager"<-"ACM Runtime": Instantiate ACM Instance response
+        "rApp Manager"->"ACM Runtime": Deploy ACM Instance
+        group Deploy A1 Part
+            "ACM Runtime"->"A1PMS Participant": Deploy ACM Instance
+            "ACM Runtime"<--"A1PMS Participant": Response
+        end
+        group Deploy Kserve Part
+            "ACM Runtime"->"Kserve Participant": Deploy ACM Instance
+            "ACM Runtime"<--"Kserve Participant": Response
+        end
+        group Deploy Kubernetes Part
+            "ACM Runtime"->"K8s Participant": Deploy ACM Instance
+            "ACM Runtime"<--"K8s Participant": Response
+        end
+        group Deploy DME Part
+            "ACM Runtime"->"DME Participant": Deploy ACM Instance
+            "ACM Runtime"<--"DME Participant": Response
+        end
+        "rApp Manager"->"ACM Runtime": ACM Deployment Status
+    end
+
+    group SME Deploy
+        "rApp Manager"->"SME": Create SME entities
+        "SME"->"SME": Create the entities as provided
+        "rApp Manager"<-"SME": Response of SME entities creation
+    end
+"API User"<-"rApp Manager": Deploy rApp Instance Status
+end
+
+autonumber
+group Undeploy rApp Instance
+"API User"->"rApp Manager": Undeploy rApp Instance
+"rApp Manager"->"rApp Manager": Fetch rApp Package and Instance details
+    group ACM Undeploy
+        "rApp Manager"->"ACM Runtime": Undeploy ACM Instance
+        group Undeploy A1 Part
+            "ACM Runtime"->"A1PMS Participant": Undeploy ACM Instance
+            "ACM Runtime"<--"A1PMS Participant": Response
+        end
+        group Undeploy Kserve Part
+            "ACM Runtime"->"Kserve Participant": Undeploy ACM Instance
+            "ACM Runtime"<--"Kserve Participant": Response
+        end
+        group Undeploy Kubernetes Part
+            "ACM Runtime"->"K8s Participant": Undeploy ACM Instance
+            "ACM Runtime"<--"K8s Participant": Response
+        end
+        group Undeploy DME Part
+            "ACM Runtime"->"DME Participant": Undeploy ACM Instance
+            "ACM Runtime"<--"DME Participant": Response
+        end
+        "rApp Manager"->"ACM Runtime": ACM Undeployment Status
+        "rApp Manager"->"ACM Runtime": Delete ACM Instance
+        "rApp Manager"<-"ACM Runtime": Delete ACM Instance response
+    end
+
+    group SME Undeploy
+        "rApp Manager"->"SME": Delete SME entities
+        "SME"->"SME": Delete the entities as provided
+        "rApp Manager"<-"SME": Response of SME entities Deletion
+    end
+"API User"<-"rApp Manager": Undeploy rApp Instance Status
+end
+
+autonumber
+group Delete rApp Instance
+"API User"->"rApp Manager": Delete rApp Instance
+"rApp Manager"->"API User": Delete rApp Instance response
+end
+
+@enduml
