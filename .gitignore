@@ -1,5 +1,7 @@
 # ORAN Add
-Dataset/*.csv
+Dataset/
+private.key.
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
