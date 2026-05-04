@@ -2,6 +2,7 @@
 Dataset/
 private.key.
 KMU.crt
+CLAUDEMD.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
