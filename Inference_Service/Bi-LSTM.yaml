@@ -1,0 +1,19 @@
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: "bi-lstm-01"
+  namespace: "kserve-test"
+spec:
+  predictor:
+    tensorflow:
+      storageUri: "http://210.123.36.94:32002/model/bi-lstm-01/1/1.0.0/Model.zip"
+      runtimeVersion: "2.17.0-gpu"
+      resources:
+        requests:
+          cpu: "0.5"
+          memory: "2Gi"
+          nvidia.com/gpu: 1
+        limits:
+          cpu: "1"
+          memory: "2Gi"
+          nvidia.com/gpu: 1
