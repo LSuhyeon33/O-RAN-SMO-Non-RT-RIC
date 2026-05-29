@@ -1,6 +1,0 @@
-influxdb_client
-pandas
-requests
-influxdb
-pandas
-schedule

@@ -1,0 +1,62 @@
+# prometheus / alertmanager / grafana는 ric-smo 노드에 배치 (호스트 부담 분산)
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      workload: ric-smo
+    retention: 7d
+    resources:
+      requests:
+        cpu: 200m
+        memory: 1Gi
+      limits:
+        memory: 2Gi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      workload: ric-smo
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+grafana:
+  nodeSelector:
+    workload: ric-smo
+  adminPassword: "oran-admin"
+  service:
+    type: LoadBalancer
+    port: 80
+    annotations:
+      metallb.universe.tf/loadBalancerIPs: "210.123.36.202"
+  persistence:
+    enabled: true
+    storageClassName: nfs-client
+    size: 5Gi
+
+# operator는 어디든 OK
+prometheusOperator:
+  nodeSelector:
+    workload: ric-smo
+
+# kube-state-metrics
+kube-state-metrics:
+  nodeSelector:
+    workload: ric-smo
+
+# node-exporter는 모든 노드 (DaemonSet)
+prometheus-node-exporter:
+  hostRootFsMount:
+    enabled: true

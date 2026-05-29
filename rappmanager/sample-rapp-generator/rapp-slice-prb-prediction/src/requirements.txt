@@ -1,8 +1,0 @@
-influxdb_client
-pandas
-requests
-tensorflow
-numpy
-joblib
-scikit-learn
-Flask
