@@ -1,0 +1,44 @@
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: "rf-riclog"
+  namespace: "kserve-test"
+spec:
+  predictor:
+    # 로컬 빌드 이미지가 oran-server 노드의 containerd 에만 있으므로 거기에 고정한다.
+    nodeSelector:
+      kubernetes.io/hostname: oran-server
+    # 커스텀 sklearn predictor: rf-04 번들의 rf_model.joblib 를 받아 predict_proba 로
+    # 6-class 확률을 반환한다. (rf 는 sklearn joblib 라 TF Serving 으로 못 띄움)
+    # 컨테이너명은 KServe 규약상 반드시 'kserve-container'.
+    containers:
+      - name: kserve-container
+        # 로컬 빌드 이미지: dev.local 접두사 → Knative tag→digest 해석을 건너뛰게 함
+        # (config-deployment registries-skipping-tag-resolving 에 dev.local 등록).
+        # kubelet 은 IfNotPresent 로 oran-server containerd 의 로컬 태그 이미지를 그대로 사용.
+        image: dev.local/rf-sklearn-predictor:dev
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        env:
+          - name: MODEL_NAME
+            value: "rf-riclog"
+          - name: MODEL_ZIP_URL
+            value: "http://210.123.36.94:32002/model/rf-04/1/1.0.0/Model.zip"
+          - name: MODEL_FILENAME
+            value: "rf_model.joblib"
+        readinessProbe:
+          httpGet:
+            path: /v1/models/rf-riclog
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 30   # 모델(~4GB) 다운로드·로드까지 충분히 대기
+        resources:
+          requests:
+            cpu: "0.5"
+            memory: "4Gi"
+          limits:
+            cpu: "2"
+            memory: "8Gi"   # RandomForest 역직렬화 ~4GB + 다운로드 버퍼 여유

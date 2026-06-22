@@ -1,0 +1,21 @@
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: "transformer-riclog"
+  namespace: "kserve-test"
+spec:
+  predictor:
+  #   nodeSelector:
+  #     kubernetes.io/hostname: oran-server
+    tensorflow:
+      storageUri: "http://210.123.36.94:32002/model/transformer-04/1/1.0.0/Model.zip"
+      runtimeVersion: "2.17.0-gpu"
+      resources:
+        requests:
+          cpu: "0.5"
+          memory: "2Gi"
+          nvidia.com/gpu: 1
+        limits:
+          cpu: "1"
+          memory: "2Gi"
+          nvidia.com/gpu: 1

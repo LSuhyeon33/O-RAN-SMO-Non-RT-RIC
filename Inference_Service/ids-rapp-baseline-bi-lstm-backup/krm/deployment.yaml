@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapp-baseline-bi-lstm
+  namespace: rapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rapp-baseline-bi-lstm
+  template:
+    metadata:
+      labels:
+        app: rapp-baseline-bi-lstm
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: oran-server
+      containers:
+        - name: rapp
+          image: ids-rapp-baseline-bi-lstm:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "-u", "main.py"]
+          ports:
+            - containerPort: 8005
+          env:
+            - name: MODEL_NAME
+              value: "baseline-bi-lstm"
+            - name: MODEL_PATH
+              value: "/model/model.keras"
+            - name: SCALER_PATH
+              value: "/model/scaler.pkl"
+            - name: INFLUX_URL
+              value: "http://influxdb2.smo.svc.cluster.local:8086"
+            - name: INFLUX_ORG
+              value: "est"
+            - name: INFLUX_BUCKET
+              value: "oom_ids"
+            - name: INFLUX_MEASUREMENT
+              value: "oom_test"
+            - name: WINDOW_SIZE
+              value: "20"
+            - name: RESULTS_DIR
+              value: "/results/baseline-bi-lstm"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influx-token
+                  key: token
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+              nvidia.com/gpu: 1
+            limits:
+              memory: "4Gi"        # 모델 in-process 로 로드 → 메모리 ↑
+              cpu: "2"
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - name: results
+              mountPath: /results
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8005
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: results
+          emptyDir: {}

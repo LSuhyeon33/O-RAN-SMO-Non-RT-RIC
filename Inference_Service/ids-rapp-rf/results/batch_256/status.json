@@ -1,0 +1,32 @@
+{
+    "batch": 363,
+    "batch_size": 256,
+    "completed_at": "2026-06-05T13:44:34.121766+00:00",
+    "elapsed_s": 27.11177453887649,
+    "error": null,
+    "eta_s": 0.0,
+    "per_scenario_windows": {
+        "oran_logs_S1_Normal": 15449,
+        "oran_logs_S1_Terminattion": 15449,
+        "oran_logs_S2": 15449,
+        "oran_logs_S3": 15449,
+        "oran_logs_S4": 15449,
+        "oran_logs_baseline": 15449
+    },
+    "phase": "completed",
+    "result_summary": {
+        "accuracy": 0.5811271495458175,
+        "f1_macro": 0.536365159314369,
+        "f1_weighted": 0.536365159314369,
+        "fnr_avg": 0.41887285045418254,
+        "latency_ms_mean": 40.1999098556655,
+        "latency_ms_p95": 51.544144516810775,
+        "n_samples": 92694,
+        "results_dir": "/results/rf-riclog",
+        "roc_auc_ovr": 0.9382236711242964
+    },
+    "started_at": "2026-06-05T13:44:07.015014+00:00",
+    "total_batches": 363,
+    "total_windows": 92694,
+    "warmup_calls": 50
+}
