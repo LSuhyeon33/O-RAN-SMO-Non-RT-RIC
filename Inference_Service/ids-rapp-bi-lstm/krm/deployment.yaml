@@ -13,6 +13,8 @@ spec:
       labels:
         app: rapp-bi-lstm
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: oran-server
       containers:
         - name: rapp
           image: ids-rapp-bi-lstm:dev
@@ -22,9 +24,9 @@ spec:
             - containerPort: 8005
           env:
             - name: KSERVE_HOST
-              value: "http://bi-lstm-01.kserve-test.svc.cluster.local"
+              value: "http://bi-lstm-riclog.kserve-test.svc.cluster.local"
             - name: MODEL_NAME
-              value: "bi-lstm-01"
+              value: "bi-lstm-riclog"
             - name: INFLUX_URL
               value: "http://influxdb2.smo.svc.cluster.local:8086"
             - name: INFLUX_ORG
@@ -34,11 +36,11 @@ spec:
             - name: INFLUX_MEASUREMENT
               value: "oom_test"
             - name: WINDOW_SIZE
-              value: "10"
+              value: "30"
             - name: MODEL_ZIP_URL        # KServe InferenceService 의 storageUri 와 동일 값
-              value: "http://210.123.36.94:32002/model/bi-lstm-01/1/1.0.0/Model.zip"
+              value: "http://210.123.36.94:32002/model/bi-lstm-03/1/1.0.0/Model.zip"
             - name: RESULTS_DIR
-              value: "/results/bi-lstm-01"
+              value: "/results/bi-lstm-riclog"
             - name: INFLUX_TOKEN
               valueFrom:
                 secretKeyRef:

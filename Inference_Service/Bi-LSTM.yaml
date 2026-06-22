@@ -1,12 +1,12 @@
 apiVersion: "serving.kserve.io/v1beta1"
 kind: "InferenceService"
 metadata:
-  name: "bi-lstm-01"
+  name: "bi-lstm-riclog"
   namespace: "kserve-test"
 spec:
   predictor:
     tensorflow:
-      storageUri: "http://210.123.36.94:32002/model/bi-lstm-01/1/1.0.0/Model.zip"
+      storageUri: "http://210.123.36.94:32002/model/bi-lstm-03/1/1.0.0/Model.zip"
       runtimeVersion: "2.17.0-gpu"
       resources:
         requests:

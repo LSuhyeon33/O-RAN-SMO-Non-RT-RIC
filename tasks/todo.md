@@ -243,3 +243,35 @@
 - Grafana TLS / 비밀번호 강화 / OIDC(Keycloak) 연동
 - Kiali 도입 (Non-RT RIC/SMO 서비스 메시 토폴로지 시각화)
 - ric-smo 노드의 자원 사용률은 21%로 여유 있음 — Non-RT RIC 워크로드 일부를 ric-smo로 강제 이전(post-patch)하면 호스트 부하 분산 가능
+
+---
+
+## Baseline rApp 구현 (Ch4 실험 2) — `Inference_Service/ids-rapp-baseline-bi-lstm/`
+
+설계 문서 `baseline_rApp_구현설계.docx` 그대로 초기 구현 완료. Proposed(`ids-rapp-bi-lstm`)를
+in-process 임베드 방식으로 개조 + v3 Table 10 벤치 3종(latency·resource·retraining) 추가.
+
+### 만든 것 (체크리스트)
+- [x] `train/train.py` — 로컬 CSV 단일 학습(KFP/FeatureStore 제거, CV 생략·validation_split=0.2), `model.keras`+`scaler.pkl` 저장. FEATURES는 `rapp/app/features.py`에서 단일 출처 import.
+- [x] `rapp/app/inference.py` — KServe HTTP 제거, in-process `tf.keras` lazy 로드. `predict_batch/predict_single` 시그니처 유지 + `model_loaded()`/`reload_model()`.
+- [x] `rapp/app/preprocess.py` — Model.zip 다운로드 제거, `joblib.load(SCALER_PATH)`만.
+- [x] `rapp/app/config.py` — KServe 항목 제거, `MODEL_PATH/SCALER_PATH` 추가, `WINDOW_SIZE=20`(학습 일치), `MODEL_NAME=baseline-bi-lstm`.
+- [x] `rapp/app/bench.py` — ① `bench_latency`(방식 A 배치단위/방식 B 누적), ② `bench_resource`(1회 추론 중 CPU%·RSS), ③ `bench_retraining_availability`(재학습 전후 1초 간격 시계열).
+- [x] `rapp/app/main.py` — `/bench/latency` `/bench/resource` `/bench/retraining` 추가, `/healthz`에 `model_loaded`(kserve_reachable 제거), `_RUN` phase 확장.
+- [x] verbatim copy: `features.py`/`influx_client.py`/`metrics.py`/`krm/namespace.yaml` (Proposed와 byte-identical 확인).
+- [x] `rapp/Dockerfile`(TF 2.17.0-gpu, model+train.py 베이크), `krm/service.yaml`·`deployment.yaml`(GPU 1·oran-server 핀·mem 4Gi), `rapp-image-build.sh`(model 산출물 체크), `.gitignore`(model/).
+
+### 검증 (호스트에서 가능한 범위)
+- py_compile 전체 통과, krm YAML 파싱 OK.
+- `make_windows` 정합성(라벨=윈도우 마지막 시점) + FEATURES(20)/N_CLASSES(6) 단위 테스트 통과.
+- TF 불요 모듈(config/features/metrics/preprocess/inference/bench) import OK.
+- 스텁 모델로 `bench_latency`(A: n_measure 표본, B: batch_size 표본+cumulative)·`bench_resource`·retraining 가드 동작 + 결과 JSON 저장 확인.
+
+### 설계 대비 의도적 차이 (기록)
+1. **빌드 컨텍스트**: model/이 rapp/의 형제라 `COPY model /model`이 context=rapp에서 불가 → build context를 baseline 루트로, Dockerfile은 `COPY rapp/app`·`train/train.py`·`model`. (Dockerfile 인라인 주석은 Docker가 인자로 오해하므로 줄 분리)
+2. **bench_latency `n_measure`**: 설계 시그니처엔 없으나 방식 A의 mean/p95/p99/std 산출에 반복이 필요 → `n_measure`(기본 100) 추가(이전 턴 사용자 결정 "배치당 반복 측정 유지" 반영). 방식 B는 단건×batch_size 호출이 그 자체로 표본을 만듦.
+
+### 남은 환경 의존 검증 (TF/클러스터 필요 — 호스트 불가)
+- `python train/train.py --epochs 5` 스모크 → `model/` 산출물 (호스트에 TF 미설치, GPU 컨테이너/학습환경에서 실행).
+- 이미지 빌드/배포/`/healthz`·`/predict`·`/evaluate`·`/bench/*` curl 검증 (oom_ids InfluxDB + GPU 노드 필요).
+- `/bench/retraining`은 컨테이너에 train CSV 마운트(`TRAIN_CSV=/data/...`) 필요 — 초기 deployment엔 데이터 볼륨 미포함(문서화).

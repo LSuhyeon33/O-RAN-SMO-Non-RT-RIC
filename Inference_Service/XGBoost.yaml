@@ -1,0 +1,44 @@
+apiVersion: "serving.kserve.io/v1beta1"
+kind: "InferenceService"
+metadata:
+  name: "xgboost-riclog"
+  namespace: "kserve-test"
+spec:
+  predictor:
+    # 로컬 빌드 이미지가 oran-server 노드의 containerd 에만 있으므로 거기에 고정한다.
+    nodeSelector:
+      kubernetes.io/hostname: oran-server
+    # 커스텀 predictor(RF 와 동일 이미지): xgboost-12 번들의 xgboost_model.json 을
+    # XGBClassifier 로 로드해 predict_proba 로 6-class 확률을 반환한다.
+    # (xgboost 는 sklearn joblib/TF SavedModel 이 아니라 네이티브 json 이라 TF Serving 으로 못 띄움)
+    # 컨테이너명은 KServe 규약상 반드시 'kserve-container'.
+    containers:
+      - name: kserve-container
+        # 로컬 빌드 이미지: dev.local 접두사 → Knative tag→digest 해석을 건너뛰게 함
+        # (config-deployment registries-skipping-tag-resolving 에 dev.local 등록).
+        image: dev.local/rf-sklearn-predictor:dev
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        env:
+          - name: MODEL_NAME
+            value: "xgboost-riclog"
+          - name: MODEL_ZIP_URL
+            value: "http://210.123.36.94:32002/model/xgboost-12/1/1.0.0/Model.zip"
+          - name: MODEL_FILENAME
+            value: "xgboost_model.json"
+        readinessProbe:
+          httpGet:
+            path: /v1/models/xgboost-riclog
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 20
+        resources:
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "2Gi"   # XGBoost json 모델은 작아 2Gi 면 충분

@@ -1,0 +1,32 @@
+{
+    "batch": 363,
+    "batch_size": 256,
+    "completed_at": "2026-06-05T14:06:02.755325+00:00",
+    "elapsed_s": 15.713329677004367,
+    "error": null,
+    "eta_s": 0.0,
+    "per_scenario_windows": {
+        "oran_logs_S1_Normal": 15449,
+        "oran_logs_S1_Terminattion": 15449,
+        "oran_logs_S2": 15449,
+        "oran_logs_S3": 15449,
+        "oran_logs_S4": 15449,
+        "oran_logs_baseline": 15449
+    },
+    "phase": "completed",
+    "result_summary": {
+        "accuracy": 0.6058428808768637,
+        "f1_macro": 0.5729546211172369,
+        "f1_weighted": 0.5729546211172369,
+        "fnr_avg": 0.3941571191231363,
+        "latency_ms_mean": 11.302560591587884,
+        "latency_ms_p95": 13.131800317205487,
+        "n_samples": 92694,
+        "results_dir": "/results/xgboost-riclog",
+        "roc_auc_ovr": 0.8698944950443992
+    },
+    "started_at": "2026-06-05T14:05:47.047936+00:00",
+    "total_batches": 363,
+    "total_windows": 92694,
+    "warmup_calls": 100
+}

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rapp-transformer
+  namespace: rapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rapp-transformer
+  template:
+    metadata:
+      labels:
+        app: rapp-transformer
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: oran-server
+      containers:
+        - name: rapp
+          image: ids-rapp-transformer:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "-u", "main.py"]
+          ports:
+            - containerPort: 8005
+          env:
+            - name: KSERVE_HOST
+              value: "http://transformer-riclog.kserve-test.svc.cluster.local"
+            - name: MODEL_NAME
+              value: "transformer-riclog"
+            - name: INFLUX_URL
+              value: "http://influxdb2.smo.svc.cluster.local:8086"
+            - name: INFLUX_ORG
+              value: "est"
+            - name: INFLUX_BUCKET
+              value: "oom_ids"
+            - name: INFLUX_MEASUREMENT
+              value: "oom_test"
+            - name: WINDOW_SIZE
+              value: "10"
+            - name: MODEL_ZIP_URL        # KServe InferenceService 의 storageUri 와 동일 값
+              value: "http://210.123.36.94:32002/model/transformer-04/1/1.0.0/Model.zip"
+            - name: RESULTS_DIR
+              value: "/results/transformer-riclog"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influx-token
+                  key: token
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+          volumeMounts:
+            - name: results
+              mountPath: /results
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: results
+          emptyDir: {}
